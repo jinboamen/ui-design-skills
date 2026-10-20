@@ -1,0 +1,4 @@
+interface:
+  display_name: "Figma 设计开发精准交付"
+  short_description: "设计开发共用：原生切图、组件交互与全覆盖严格验收，减少重复维护"
+  default_prompt: "使用 $figma-precision-delivery 按设计开发统一规则精准还原这个 Figma 页面，保留全部严格质量门槛，默认使用增量精准模式。"
