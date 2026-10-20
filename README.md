@@ -1,39 +1,73 @@
-# UI Skills & Tools
+# Figma 精准还原交付
 
-通用 UI 设计与前端交付技能集合，涵盖 Figma 设计还原、运营活动页制作及素材校验工具。
+`figma-precision-delivery` 是面向设计师与前端开发者的通用技能：根据 Figma 的真实结构、原生切图、组件、交互和动效完成页面实现，并以浏览器证据验收还原结果。
 
-## 分支导航
+## 适用场景
 
-`skill` 为默认主分支，用于维护仓库说明和技能索引。每个技能在独立的同名分支中维护。
+- 将指定 Figma 页面或组件实现到已有前端项目。
+- 排查布局、间距、字体、图片裁切、组件状态和动效的还原偏差。
+- 只读诊断设计与实现的差异，或维护统一的设计交付规则。
 
-| 分支 | 用途 | 使用文档 |
-| --- | --- | --- |
-| `figma-precision-delivery` | 将 Figma 设计还原为前端，检查素材、交互与视觉精度 | [查看 README](../../tree/figma-precision-delivery) |
-| `v1-activity-page` | 从 KV 制作 1920px 静态活动页，交付分层素材与整页预览 | [查看 README](../../tree/v1-activity-page) |
+该技能面向设计稿到前端的交付；不会因为还原任务自动扩展业务 API、认证、路由或构建系统。
 
-两个技能均包含 `SKILL.md`、`agents/openai.yaml`、专题参考文档与 Python 辅助脚本。请先切换到对应分支，再阅读其 README 和技能入口。
+## 目录结构
 
-## 获取技能
-
-在本仓库页面选择目标分支后，通过 **Code → Download ZIP** 下载，或复制仓库地址后运行：
-
-```sh
-git clone --branch figma-precision-delivery --single-branch <仓库地址> ui-figma-skill
-git clone --branch v1-activity-page --single-branch <仓库地址> ui-activity-skill
+```text
+figma-precision-delivery/
+├── SKILL.md
+├── agents/openai.yaml
+├── references/
+│   ├── efficient-workflow.md
+│   ├── tool-access.md
+│   ├── asset-extraction.md
+│   ├── interaction-fidelity.md
+│   ├── visual-fidelity.md
+│   ├── project-integration.md
+│   └── asset-bridge.md
+└── scripts/transparent_asset_gate.py
 ```
 
-将下载内容中与分支同名的整个技能文件夹放入所用 AI 客户端的技能目录，保留文件结构。具体安装路径与加载方式以客户端为准；只复制 `SKILL.md` 会缺少参考规则和校验工具。
+## 安装与准备
 
-## 使用前准备
+将完整的 `figma-precision-delivery/` 文件夹放入所用 AI 客户端的技能目录，按客户端方式加载。入口为 [SKILL.md](figma-precision-delivery/SKILL.md)。
 
-- Figma 还原需要设计文件访问权限、支持必要读取与导出的 Figma 工具、目标前端项目和浏览器验收能力。
-- 活动页制作需要本次 KV、活动配置、图片生成、网页搜索和图片查看、浏览器预览能力。
-- 辅助脚本需要 Python 3.10 或更高版本及 Pillow；技能文档和脚本不代替这些运行环境。
+执行还原需要：可访问的 Figma 文件及精确节点、具备必要属性读取和原生导出能力的 Figma 工具、目标前端项目，以及可采集真实页面证据的浏览器。能力缺失时按规则记录未验证项。
 
-## 维护约定
+透明素材校验脚本需要 Python 3.10+ 与 Pillow：
 
-- 在对应技能分支修改规则、脚本和 README，保持入口与专题引用一致。
-- 公开内容使用通用示例，不提交真实客户资料、业务页面地址、访问凭据、本机路径或工作缓存。
-- `__pycache__`、编译缓存和环境文件由 `.gitignore` 排除。
+```sh
+python -m pip install Pillow
+python figma-precision-delivery/scripts/transparent_asset_gate.py --help
+```
 
-使用能力、流程边界及验收条件以各技能的 `SKILL.md` 和专题文档为准。
+本技能不附带或自动安装本地 Figma 桥接服务；`asset-bridge.md` 仅用于用户明确启用已有桥接时的适配。
+
+## 使用示例
+
+在支持技能调用的客户端中输入，并附上实际设计链接和目标项目：
+
+```text
+使用 $figma-precision-delivery，把这个 Figma 页面还原到当前前端项目。
+按原生 Export/Slice 获取素材，保留组件状态、交互和动效，完成浏览器验收。
+```
+
+只做诊断时可输入：
+
+```text
+使用 $figma-precision-delivery，只读检查设计稿与当前页面的还原偏差，给出证据和修正建议。
+```
+
+## 执行与验收
+
+1. 锁定交付范围、根节点和工具能力，建立设计快照。
+2. 识别 Export/Slice 与组件继承，导出页面实际实例并完成素材准入。
+3. 按结构、几何、文字、素材、交互的顺序实现；修改时局部复验。
+4. 检查全部可见节点、整页及一级模块像素差、计算样式、间距、交互与构建结果。
+
+默认增量模式与严格认证模式具有相同精度底线；缓存仅减少重复工作。严格认证还有附加证据要求，具体见 [执行等级](figma-precision-delivery/references/efficient-workflow.md) 和 [视觉验收](figma-precision-delivery/references/visual-fidelity.md)。
+
+`transparent_asset_gate.py` 检查透明 PNG 来源、候选 WebP 与独立基准的一致性，通过后才将素材原子写入目标位置。完整参数以 `--help` 和 [素材准入规则](figma-precision-delivery/references/asset-extraction.md) 为准。
+
+最终应提供实现或诊断结果、修改位置、预览位置、验收指标及失败或未验证项。脚本通过、截图通过或构建通过中的任一项，均不能单独证明整个页面完成还原。
+
+[返回技能索引](../../tree/skill)
