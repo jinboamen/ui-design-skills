@@ -47,7 +47,7 @@ npx skills add jinboamen/ui-design-skills --list
 | 技能 | 最新已发布版本 | 下载 | 发布说明 |
 | --- | --- | --- | --- |
 | Figma 精准还原交付 | v1.0.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/figma-precision-delivery-v1.0.0/figma-precision-delivery-v1.0.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/figma-precision-delivery-v1.0.0) |
-| V1 活动页制作 | v1.0.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/v1-activity-page-v1.0.0/v1-activity-page-v1.0.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/v1-activity-page-v1.0.0) |
+| V1 活动页制作 | v1.1.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/v1-activity-page-v1.1.0/v1-activity-page-v1.1.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/v1-activity-page-v1.1.0) |
 
 解压后，打开版本文件夹，将里面与技能同名的**整个文件夹**放入所用 AI 客户端的技能目录，并按客户端方式加载。只复制 `SKILL.md` 会缺少参考文档和脚本。
 

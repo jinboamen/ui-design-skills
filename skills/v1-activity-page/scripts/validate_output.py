@@ -31,8 +31,8 @@ FIXED_SIZES = {
     "blind.background": (1920, 806),
     "blind.art": (317, 300),
     "blind.button": (232, 80),
-    "marquee.background": (1920, 1265),
     "marquee.prize": (200, 200),
+    "marquee.highlight": (200, 200),
     "lottery.record": (160, 60),
     "lottery.probability": (640, 402),
     "task.row": (700, 120),
@@ -51,11 +51,11 @@ TITLE_MODULES = {
 }
 FOREGROUND_ROLES = set(TITLE_MODULES) | {
     "package.card", "package.button", "blind.art", "blind.backdrop", "blind.prize-card", "blind.button", "marquee.prize",
-    "marquee.center", "lottery.record", "task.row",
+    "marquee.center", "marquee.highlight", "lottery.record", "task.row",
     "task.button-available", "task.button-claimed",
     "gift.unclaimed", "gift.claimed", "gift.empty", "rule.button",
 }
-ALL_ROLES = set(FIXED_SIZES) | set(TITLE_MODULES) | {"hero", "banner", "marquee.center", "task.background", "rule.background", "blind.backdrop", "blind.prize-card"}
+ALL_ROLES = set(FIXED_SIZES) | set(TITLE_MODULES) | {"hero", "banner", "marquee.center", "marquee.background", "task.background", "rule.background", "blind.backdrop", "blind.prize-card"}
 MARQUEE_CENTERS = {8: (180, 180), 10: (410, 180), 12: (300, 300)}
 
 
@@ -86,7 +86,7 @@ class PageStructure(HTMLParser):
         module = attrs.get("data-module") or (self.stack[-1]["module"] if self.stack else None)
         node = {"tag": tag, "module": module, "role": attrs.get("data-role"), "attrs": attrs,
                 "parents": [n["role"] for n in self.stack], "text": "",
-                "parent_card": next((n for n in reversed(self.stack) if n["role"] == "blind-prize-card"), None)}
+                "parent_card": next((n for n in reversed(self.stack) if n["role"] in {"blind-prize-card", "marquee-prize"}), None)}
         self.nodes.append(node)
         if node["role"]:
             self.roles.append(node)
@@ -232,7 +232,16 @@ def validate_references(root: Path, errors: list[str]) -> None:
             errors.append(str(exc))
 
 
+def marquee_background_height(slots: int) -> int:
+    if type(slots) is not int or slots not in MARQUEE_CENTERS:
+        raise ValueError("跑马灯需要 lottery_slots=8、10 或 12")
+    board_height = 890 if slots == 12 else 660
+    return 150 + board_height + 10 + 38 + 90
+
+
 def expected_size(role: str, item: dict, data: dict) -> tuple[int, int] | None:
+    if role == "marquee.background":
+        return (1920, marquee_background_height(data.get("lottery_slots")))
     if role in {"blind.backdrop", "blind.prize-card"} or role in TITLE_MODULES:
         size = (item.get("width"), item.get("height"))
         if any(not isinstance(v, int) or isinstance(v, bool) or v <= 0 for v in size):
@@ -335,7 +344,7 @@ def validate_counts(data: dict, counts: Counter, errors: list[str]) -> None:
         for role in ("blind.background", "blind.art", "blind.button"):
             if counts[role] != 1:
                 errors.append(f"盲盒模式需要 1 张 {role}")
-        if any(counts[r] for r in ("marquee.background", "marquee.prize", "marquee.center")):
+        if any(counts[r] for r in ("marquee.background", "marquee.prize", "marquee.center", "marquee.highlight")):
             errors.append("盲盒模式不能混入跑马灯素材")
     elif style == "marquee":
         slots = data.get("lottery_slots")
@@ -343,13 +352,15 @@ def validate_counts(data: dict, counts: Counter, errors: list[str]) -> None:
             errors.append("跑马灯必须确认 lottery_slots=8、10 或 12")
         if counts["marquee.background"] != 1 or counts["marquee.center"] != 1:
             errors.append("跑马灯需要 1 张背景和 1 张中心图")
+        if counts["marquee.highlight"] != 1:
+            errors.append("跑马灯需要恰好1张共用 marquee.highlight 透明高亮素材")
         if counts["marquee.prize"] != slots:
             errors.append(f"跑马灯奖品图数量应为 {slots}")
         if any(counts[r] for r in ("blind.background", "blind.art", "blind.button")):
             errors.append("跑马灯模式不能混入盲盒素材")
     elif any(counts[r] for r in (
         "blind.background", "blind.art", "blind.button", "marquee.background",
-        "marquee.prize", "marquee.center", "lottery.record", "lottery.probability"
+        "marquee.prize", "marquee.center", "marquee.highlight", "lottery.record", "lottery.probability"
     )):
         errors.append("没有抽奖模块时不应列出抽奖素材")
 
@@ -516,6 +527,47 @@ def validate_module_titles(root: Path, data: dict, errors: list[str]) -> None:
         errors.append("所有模块标题须共用一套title_style、画布及显示宽高，只替换文案；实际字形、显示尺度和效果另作视觉验收")
 
 
+def validate_marquee_structure(root: Path, data: dict, errors: list[str]) -> None:
+    if data.get("lottery_style") != "marquee" or not (root / "index.html").is_file():
+        return
+    slots = data.get("lottery_slots")
+    if type(slots) is not int or slots not in MARQUEE_CENTERS:
+        return
+    page = PageStructure()
+    page.feed((root / "index.html").read_text(encoding="utf-8"))
+    for role in ("marquee-board", "marquee-toggle"):
+        nodes = [n for n in page.roles if n["role"] == role]
+        if len(nodes) != 1 or nodes[0]["module"] != "lottery":
+            errors.append(f"跑马灯需要一个位于lottery内的 {role}")
+        elif role == "marquee-toggle" and (nodes[0]["tag"] != "button"
+                or nodes[0]["attrs"].get("type") != "button"
+                or "marquee-board" not in nodes[0]["parents"]):
+            errors.append("跑马灯中心须为棋盘内的普通button，用于暂停／继续演示")
+    cards = [n for n in page.roles if n["role"] == "marquee-prize"]
+    if (len(cards) != slots or {n["attrs"].get("data-marquee-index") for n in cards}
+            != {str(i) for i in range(slots)}):
+        errors.append("跑马灯外围奖品数量与顺序编号须覆盖0至lottery_slots-1且不重复")
+    highlights = [a for a in data.get("assets", []) if a.get("role") == "marquee.highlight"]
+    overlays = [n for n in page.roles if n["role"] == "marquee-highlight"]
+    if len(overlays) != slots:
+        errors.append("每个跑马灯奖品格均须引用共用高亮图片")
+    for card in cards:
+        if card["module"] != "lottery" or "marquee-board" not in card["parents"]:
+            errors.append("跑马灯奖品格必须位于lottery的棋盘内")
+        parts = [n for n in overlays if n["parent_card"] is card]
+        if len(parts) != 1 or parts[0]["tag"] != "img":
+            errors.append("每个跑马灯奖品格须包含一个img高亮叠层")
+            continue
+        if len(highlights) == 1:
+            try:
+                if local_file(root, parts[0]["attrs"].get("src", "")) != local_file(root, highlights[0]["file"]):
+                    errors.append("跑马灯各格高亮须复用清单中的同一张PNG")
+            except (ValueError, KeyError) as exc:
+                errors.append(f"跑马灯高亮引用错误：{exc}")
+    if sum(n["attrs"].get("data-active") == "true" for n in cards) != 1:
+        errors.append("跑马灯初始HTML须恰好一格高亮，以便静态截图与脚本未启动时预览")
+
+
 def validate_preview(root: Path, data: dict, errors: list[str]) -> None:
     path = root.with_name(root.name + "-preview.png")
     if not path.is_file():
@@ -529,7 +581,9 @@ def validate_preview(root: Path, data: dict, errors: list[str]) -> None:
                        if isinstance(item, dict) and item.get("role") in {"hero", "banner"}]
             minimum = sum(h for h in heights if isinstance(h, int) and not isinstance(h, bool))
             minimum += 520 * int(data.get("package_count", 0) > 0)
-            minimum += {"blind_box": 806, "marquee": 1265}.get(data.get("lottery_style"), 0)
+            minimum += (marquee_background_height(data.get("lottery_slots"))
+                        if data.get("lottery_style") == "marquee"
+                        else 806 if data.get("lottery_style") == "blind_box" else 0)
             tasks = data.get("task_count", 0)
             if isinstance(tasks, int) and tasks > 0:
                 minimum += 299 + 166 * tasks
@@ -1279,6 +1333,7 @@ def main() -> int:
     validate_references(root, errors)
     validate_structure(root, data, errors)
     validate_rule_module(root, data, errors)
+    validate_marquee_structure(root, data, errors)
     validate_module_titles(root, data, errors)
     validate_preview(root, data, errors)
     validate_blind_layout(root, data, errors)
