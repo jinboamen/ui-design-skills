@@ -620,7 +620,7 @@ def validate_blind_layout(root: Path, data: dict, errors: list[str]) -> None:
     assets = data.get("assets", [])
     report = root / "design/blind-layout-check.json"
     if not report.is_file():
-        errors.append("缺少design/blind-layout-check.json：底框并入背景仍须检查包裹、居中及完整盲盒组合，不能因没有独立PNG而跳过")
+        errors.append("缺少design/blind-layout-check.json：底框并入背景仍须按承托类型检查几何、构图或接触及完整盲盒组合，不能因没有独立PNG而跳过")
         return
     try:
         layout = json.loads(report.read_text(encoding="utf-8"))
@@ -630,6 +630,13 @@ def validate_blind_layout(root: Path, data: dict, errors: list[str]) -> None:
             return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
         if layout.get("viewport_width") != 1920:
             raise ValueError("底框测量必须来自1920px浏览器视口")
+        support_type = layout.get("support_type", "enclosing_frame")
+        allowed_types = {"enclosing_frame", "graphic_backing", "physical_support"}
+        if not isinstance(support_type, str) or support_type not in allowed_types:
+            raise ValueError("support_type须为enclosing_frame、graphic_backing或physical_support")
+        additional = layout.get("additional_support_type")
+        if additional is not None and (support_type != "enclosing_frame" or additional != "physical_support"):
+            raise ValueError("additional_support_type仅用于包裹框同时具有实体承托时，值须为physical_support")
         padding, inset = layout.get("minimum_padding", 0), layout.get("backdrop_inset")
         if not all(number(value) and value >= 0 for value in (padding, inset)):
             raise ValueError("minimum_padding默认0且须为非负数，backdrop_inset须为非负数")
@@ -660,7 +667,7 @@ def validate_blind_layout(root: Path, data: dict, errors: list[str]) -> None:
                                     and 0 <= box[1] < box[3] <= image.height)):
                         raise ValueError("背景底框须记录从最终PNG实测的visible_bounds=[左,上,右,下]，不能用整张背景范围代替")
                     if box == [0, 0, image.width, image.height]:
-                        raise ValueError("底框须为盲盒背后的局部区域，不能以整张背景冒充底框包裹")
+                        raise ValueError("底板须为盲盒对应的局部承托区域，不能以整张背景冒充底板")
                 sx, sy = node["width"] / image.width, node["height"] / image.height
                 expected = (317 / 296) if key == "art" else (image.width / image.height)
                 if abs(node["width"] / node["height"] / expected - 1) > 0.01:
@@ -668,14 +675,32 @@ def validate_blind_layout(root: Path, data: dict, errors: list[str]) -> None:
                 bounds[key] = [node["left"] + box[0] * sx, node["top"] + box[1] * sy,
                                node["left"] + box[2] * sx, node["top"] + box[3] * sy]
         art, plate = bounds["art"], bounds["backdrop"]
-        margins = [art[0] - plate[0] - inset, art[1] - plate[1] - inset,
-                   plate[2] - art[2] - inset, plate[3] - art[3] - inset]
-        for side, value in zip(("左", "上", "右", "下"), margins):
-            if value + 1 < padding:
-                errors.append(f"背景内盲盒底框{side}侧未覆盖完整主体：边界差{value:.1f}px，须覆盖蝴蝶结、盒盖及突出部分")
-        dx, dy = [(plate[i] + plate[i + 2] - art[i] - art[i + 2]) / 2 for i in (0, 1)]
-        if abs(dx) > 3 or abs(dy) > 3:
-            errors.append(f"背景内盲盒底框与完整主体未居中：水平偏差{dx:.1f}px，垂直偏差{dy:.1f}px；不能只对齐盒身")
+        if support_type == "enclosing_frame":
+            margins = [art[0] - plate[0] - inset, art[1] - plate[1] - inset,
+                       plate[2] - art[2] - inset, plate[3] - art[3] - inset]
+            for side, value in zip(("左", "上", "右", "下"), margins):
+                if value + 1 < padding:
+                    errors.append(f"背景内盲盒底框{side}侧未覆盖完整主体：边界差{value:.1f}px，须覆盖蝴蝶结、盒盖及突出部分")
+            dx, dy = [(plate[i] + plate[i + 2] - art[i] - art[i + 2]) / 2 for i in (0, 1)]
+            if abs(dx) > 3 or abs(dy) > 3:
+                errors.append(f"背景内盲盒底框与完整主体未居中：水平偏差{dx:.1f}px，垂直偏差{dy:.1f}px；不能只对齐盒身")
+        required_checks = {
+            "enclosing_frame": (),
+            "graphic_backing": ("composition", "visual_center", "occlusion"),
+            "physical_support": ("perspective", "depth", "contact"),
+        }[support_type]
+        if additional == "physical_support":
+            required_checks += ("perspective", "depth", "contact")
+        checks = layout.get("type_checks", {})
+        if required_checks and not isinstance(checks, dict):
+            raise ValueError("type_checks须记录本次所选承托类型的实际视觉检查")
+        for key in required_checks:
+            item = checks.get(key)
+            if (not isinstance(item, dict) or not isinstance(item.get("observation"), str)
+                    or not item["observation"].strip()):
+                raise ValueError(f"承托类型{support_type}缺少实际观察：{key}")
+            if item.get("status") != "pass":
+                errors.append(f"承托类型检查{key}未通过，须修复后重新查看完整组合")
         review = layout.get("fusion_review")
         if (not isinstance(review, dict) or not isinstance(review.get("observation"), str)
                 or not review["observation"].strip()):
@@ -695,7 +720,7 @@ def validate_blind_layout(root: Path, data: dict, errors: list[str]) -> None:
                     or not item["observation"].strip()):
                 raise ValueError(f"盲盒交互缺少实际观察：{key}")
             if item.get("status") != "pass":
-                errors.append(f"盲盒交互{key}未恢复：不能只通过居中与包裹后交付")
+                errors.append(f"盲盒交互{key}未恢复：不能只通过几何或类型检查后交付")
         if review.get("status") != "pass":
             errors.append("盲盒与背景内底框的融合未通过，须返修背景并重新回填检查")
         with Image.open(local_file(root, review["file"])) as screenshot:

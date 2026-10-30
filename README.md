@@ -47,7 +47,7 @@ npx skills add jinboamen/ui-design-skills --list
 | 技能 | 最新已发布版本 | 下载 | 发布说明 |
 | --- | --- | --- | --- |
 | Figma 精准还原交付 | v1.0.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/figma-precision-delivery-v1.0.0/figma-precision-delivery-v1.0.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/figma-precision-delivery-v1.0.0) |
-| V1 活动页制作 | v1.1.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/v1-activity-page-v1.1.0/v1-activity-page-v1.1.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/v1-activity-page-v1.1.0) |
+| V1 活动页制作 | v1.2.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/v1-activity-page-v1.2.0/v1-activity-page-v1.2.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/v1-activity-page-v1.2.0) |
 
 解压后，打开版本文件夹，将里面与技能同名的**整个文件夹**放入所用 AI 客户端的技能目录，并按客户端方式加载。只复制 `SKILL.md` 会缺少参考文档和脚本。
 
@@ -117,8 +117,8 @@ skills/
 
 ## 反馈与维护
 
-遇到问题可 [提交 Issue](https://github.com/jinboamen/ui-design-skills/issues)，说明使用的技能、客户端、预期结果与实际问题。示例和截图请使用可公开的脱敏内容。
+遇到问题可 [提交 Issue](https://github.com/jinboamen/ui-design-skills/issues)，说明使用的技能、客户端、预期结果与实际问题。请附上可公开的示例和截图。
 
-更新技能时同步主分支目录、对应技能分支及相关说明；发布新版本时重新生成下载包并检查。公开内容使用通用示例，不提交真实客户资料、业务页面地址、访问凭据、本机路径或工作缓存。
+更新技能时同步主分支目录、对应技能分支及相关说明；发布新版本时重新生成下载包并检查。
 
 如果这些流程对你有帮助，欢迎 Star 收藏，或将仓库分享给需要设计还原与活动页制作的同学。
