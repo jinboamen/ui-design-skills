@@ -6,7 +6,7 @@
 
 AI skills for **Figma-to-code**, **UI design**, and **campaign landing pages**, with asset validation and delivery workflows.
 
-[查看技能](#选择技能) · [一键安装](#一键安装) · [直接下载 ZIP](#直接下载-zip) · [版本发布](https://github.com/jinboamen/ui-design-skills/releases)
+[查看技能](#选择技能) · [AI → Figma 完整工作流与示意图](skills/ai-figma-design-workflow/README.md#流程示意图) · [一键安装](#一键安装) · [直接下载 ZIP](#直接下载-zip) · [版本发布](https://github.com/jinboamen/ui-design-skills/releases)
 
 ## 选择技能
 
