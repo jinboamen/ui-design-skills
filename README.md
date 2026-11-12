@@ -48,7 +48,7 @@ npx skills add jinboamen/ui-design-skills --list
 
 | 技能 | 最新已发布版本 | 下载 | 发布说明 |
 | --- | --- | --- | --- |
-| AI → Figma 设计交付 | v1.0.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/ai-figma-design-workflow-v1.0.0/ai-figma-design-workflow-v1.0.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/ai-figma-design-workflow-v1.0.0) |
+| AI → Figma 设计交付 | v1.0.1 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/ai-figma-design-workflow-v1.0.1/ai-figma-design-workflow-v1.0.1.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/ai-figma-design-workflow-v1.0.1) |
 | Figma 精准还原交付 | v1.0.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/figma-precision-delivery-v1.0.0/figma-precision-delivery-v1.0.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/figma-precision-delivery-v1.0.0) |
 | V1 活动页制作 | v1.2.0 | [下载 ZIP](https://github.com/jinboamen/ui-design-skills/releases/download/v1-activity-page-v1.2.0/v1-activity-page-v1.2.0.zip) | [查看 Release](https://github.com/jinboamen/ui-design-skills/releases/tag/v1-activity-page-v1.2.0) |
 
