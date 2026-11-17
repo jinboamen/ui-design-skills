@@ -4,6 +4,8 @@
 
 适用于网页、后台、移动端、桌面端和跨端产品，也适用于从零设计、已有产品新增功能、局部改版及规范修正。
 
+制作或修改原生可编辑的 Figma 最终设计稿时自动使用本技能。完成下方 Codex 全局配置后，五项规范覆盖该配置下的 Figma 制作与修改任务，并要求在最终设计稿写入前读取本技能。
+
 [流程示意图](#流程示意图) · [完整工作流](#完整工作流) · [输入准备](#开始前准备什么) · [交付标准](#最终交付什么) · [安装与工具](#安装与工具准备) · [提示词示例](#使用示例)
 
 ## 流程示意图
@@ -121,7 +123,7 @@ AI 必须实际查看图片、页面或截图，并在制作前展示：
 | 响应式 | 主内容随可用宽度延伸，等分区域合理等宽，达到最大宽度后按设计居中 |
 | 四周内边距 | 逐个核对内容容器上、下、左、右 Padding 及实际留白，避免非预期贴边 |
 | 图层 | 文字、控件、表格、卡片和普通图标尽量原生可编辑，清理无作用的包装画框 |
-| 图片与 icon | 等比适应、等比裁切或等比缩放，避免拉宽、压扁和主体变形 |
+| 图片与 icon | 等比适应、等比裁切或等比缩放，同组 icon 描边视觉宽度与粗细统一 |
 | 配图 | 可使用透明 PNG 等图片资产，保留透明通道与清晰度 |
 | PC 状态 | 可交互控件设计 Default / Hover，并可在组件实例中切换 |
 | 移动端状态 | 不要求 Hover，不依赖鼠标悬停才能使用 |
@@ -136,11 +138,11 @@ AI 必须实际查看图片、页面或截图，并在制作前展示：
 AI 不仅检查图层参数，还要导出或截图，实际查看关键状态。
 
 - **核对原始内容：** 文案、数据、提示、入口和状态与授权范围一致，无擅自添加或漏项。
-- **检查组件：** 引用有效，重复 UI 正确复用，属性修改与状态切换真正生效。
+- **检查组件：** 引用有效，重复 UI 正确复用，组件与变体精简，属性修改与状态切换真正生效。
 - **拉宽、缩窄画框：** 对同一画框执行尺寸调整，检查较窄、基准、较宽尺寸的内容延伸、等宽分配、居中、留白与重排。
 - **检查内容变化：** 临时使用长文案、内容增减和按钮显隐，确认布局不会被破坏，随后还原测试内容。
 - **强制检查四边：** 逐个核对页面、卡片、弹窗、按钮等内容容器的上、下、左、右 Padding 和实际留白，在不同宽度、长文案、显隐及状态切换后复查。非预期贴边必须修正后再交付；有明确依据的通栏背景、满版图片等按设计保留。
-- **检查图片与图标：** 比例正确，透明 PNG 没有白底，裁切保留必要主体。
+- **检查图片与图标：** 比例正确，同组 icon 描边视觉宽度与粗细统一，透明 PNG 保留透明度，裁切保留必要主体。
 - **对照实际视觉：** 与批准样张或正式规范对照；直接制作则按设计方向和参考借鉴点验收。
 - **清理交付：** 移除测试节点、无用重复区域与冗余包装层，修复本轮造成的失效连接。
 
@@ -176,7 +178,35 @@ AI 不仅检查图层参数，还要导出或截图，实际查看关键状态�
 npx skills add jinboamen/ui-design-skills --skill ai-figma-design-workflow
 ```
 
-也可从 [v1.0.1 版本发布](https://github.com/jinboamen/ui-design-skills/releases/tag/ai-figma-design-workflow-v1.0.1) 下载 ZIP，将其中整个 `ai-figma-design-workflow/` 文件夹放入支持的客户端技能目录。入口为 [SKILL.md](SKILL.md)，两个参考文档需一并保留。版本包对应固定快照，本页为默认分支上的最新使用介绍。
+也可从 [v1.0.1 版本发布](https://github.com/jinboamen/ui-design-skills/releases/tag/ai-figma-design-workflow-v1.0.1) 下载对应历史快照。获取本页描述的全局规范同步功能时，使用上方命令安装默认分支版本，或下载仓库默认分支 ZIP。将整个 `ai-figma-design-workflow/` 文件夹放入支持的客户端技能目录，保留 [SKILL.md](SKILL.md)、`agents/`、`references/` 和 `scripts/`。
+
+### Codex 全局规范与自动调用
+
+技能安装后，执行 [全局规范同步工具](scripts/sync-global-rules.ps1)。将下方路径替换为实际安装目录，在 Windows PowerShell 5.1+ 或 PowerShell 7 中运行。
+
+```powershell
+& "<已安装技能目录>/scripts/sync-global-rules.ps1"
+& "<已安装技能目录>/scripts/sync-global-rules.ps1" -Check
+```
+
+已下载或克隆本仓库时，也可在仓库根目录执行。
+
+```powershell
+& "./skills/ai-figma-design-workflow/scripts/sync-global-rules.ps1"
+& "./skills/ai-figma-design-workflow/scripts/sync-global-rules.ps1" -Check
+```
+
+工具按 `CODEX_HOME` 定位配置，未设置时使用用户目录下的 `.codex`，可用 `-CodexDirectory "<配置目录>"` 指定目标。它将 [全局规范](references/global-figma-rules.md) 合并进全局 `AGENTS.md`，存在非空 `AGENTS.override.md` 时一并同步。重复运行更新同一规则块，保留用户原有指令。`-Check` 为只读核验，规则缺失或过期时返回失败。完成后开启新会话加载配置。
+
+全局规则要求制作或修改 Figma 最终设计稿前读取本技能，并将以下五项作为所有 Figma 制作与修改任务的默认要求。
+
+1. 图片和 icon 等比，统一同组 icon 描边的视觉粗细。
+2. 复用已有组件，精简重复和冗余组件、变体。
+3. 精准自动布局与响应式约束，实际验证画板宽度变化，精简无作用的嵌套画框。
+4. 严格依据原型或原始内容生成文字，内容补充按用户明确授权执行。
+5. 检查上下左右内边距与实际留白，修正意外贴边后复验。
+
+其他 AI 客户端可将同一份全局规范合并到其支持的全局指令配置。安装技能文件与配置客户端全局指令分别完成和验证。
 
 该包提供流程指令，不附带 Figma 写入服务、访问凭据、字体、私有素材或其他技能。执行需要：
 
@@ -252,14 +282,19 @@ ai-figma-design-workflow/
 ├── README.md
 ├── LICENSE
 ├── agents/openai.yaml
-└── references/
-    ├── design-research.md
-    └── figma-delivery.md
+├── references/
+│   ├── design-research.md
+│   ├── figma-delivery.md
+│   └── global-figma-rules.md
+└── scripts/
+    └── sync-global-rules.ps1
 ```
 
 - [SKILL.md](SKILL.md)：AI 执行入口与核心规则。
 - [设计研究与原型隔离](references/design-research.md)：平台白名单、作品质量、实际看图与独立设计。
 - [Figma 制作与验收](references/figma-delivery.md)：内容、组件、自适应、Hover、图片及原生图层验收。
+- [全局 Figma 规范](references/global-figma-rules.md)包含五项默认要求与最终设计稿自动调用规则。
+- [全局规范同步工具](scripts/sync-global-rules.ps1)用于合并和核验 Codex 全局配置。
 
 本 Skill 及目录下文档采用 [MIT License](LICENSE)。第三方参考网站、作品、字体与素材的权利归各自权利人所有，本许可不授予这些第三方内容的使用权。
 

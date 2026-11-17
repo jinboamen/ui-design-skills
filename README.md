@@ -42,6 +42,20 @@ npx skills add jinboamen/ui-design-skills --list
 
 以上使用 [Skills CLI](https://github.com/vercel-labs/skills)。命令安装的是技能文件；执行具体工作还需要下面列出的工具和输入。
 
+### AI Figma 的 Codex 全局规范配置
+
+安装或更新 `ai-figma-design-workflow` 后，执行技能附带的 `scripts/sync-global-rules.ps1`，将五项 Figma 制作规范及最终设计稿自动调用要求合并到当前用户的 Codex 全局指令。同步完成后，使用其他技能制作 Figma 时也须遵循这五项规范。
+
+可以直接让 AI 完成配套配置。
+
+```text
+请安装或更新 ai-figma-design-workflow，并执行该技能的
+scripts/sync-global-rules.ps1，同步 Codex 全局 Figma 规范，
+再用 -Check 检查结果。
+```
+
+同步工具适用于 Windows PowerShell 5.1+ 或 PowerShell 7，支持指定 Codex 配置目录，重复执行更新同一规则块，保留用户原有指令。配置完成后开启新会话加载。其他客户端可按各自全局指令机制合并同一份规范，具体操作见 [安装与工具准备](skills/ai-figma-design-workflow/README.md#安装与工具准备)。
+
 ## 直接下载 ZIP
 
 不熟悉命令行，可以直接下载发布包：
@@ -120,7 +134,8 @@ skills/
 │   ├── SKILL.md
 │   ├── LICENSE
 │   ├── agents/
-│   └── references/
+│   ├── references/
+│   └── scripts/
 ├── figma-precision-delivery/
 │   ├── README.md
 │   ├── SKILL.md

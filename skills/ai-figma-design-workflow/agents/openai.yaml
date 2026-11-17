@@ -1,6 +1,6 @@
 interface:
   display_name: "AI → Figma 设计交付"
-  short_description: "联网研究与独立 UI 设计，默认确认样张，也支持明确授权后直接制作 Figma"
-  default_prompt: "使用 $ai-figma-design-workflow，先从精选顶尖设计/UI 平台联网搜索、筛选并实际查看优质案例；原型只提取业务需求，单独完成 UI 设计，默认先给我完整 UI 样张，确认后制作可编辑 Figma 稿；我明确要求直接生成 Figma 时可跳过样张确认。"
+  short_description: "制作最终 Figma 稿时自动使用，遵循五项规范并完成研究、制作与验收"
+  default_prompt: "使用 $ai-figma-design-workflow 制作可编辑 Figma 最终设计稿，按任务类型完成设计研究、样张或直接制作，执行图片与图标规范、组件与变体精简、响应式自动布局、原始文案忠实和四周边距检查。"
 policy:
   allow_implicit_invocation: true
