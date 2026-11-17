@@ -15,8 +15,9 @@ AI skills for **Figma-to-code**, **UI design**, and **campaign landing pages**, 
 | 从需求、原型或已有设计生成可编辑 Figma 稿 | `ai-figma-design-workflow` | 需求与设计资料 → 独立 UI 样张、组件化 Figma、自动布局与自适应验收 | [AI → Figma 设计交付](skills/ai-figma-design-workflow/README.md) |
 | 把设计稿还原成前端，或排查还原偏差 | `figma-precision-delivery` | Figma 文件与节点、目标项目 → 页面实现、原生素材、交互和视觉验收结果 | [Figma 精准还原](skills/figma-precision-delivery/README.md) |
 | 从一张主视觉 KV 制作完整活动页 | `v1-activity-page` | KV 与活动配置 → 三套样张选一套、1920px 静态页面、分层 PNG、独立装饰和整页预览 | [V1 活动页制作](skills/v1-activity-page/README.md) |
+| 按现有后台制作单列、双列或混排活动素材 | `v2-activity-page` | KV 与后台规格 → 三套完整样张选一套、2× 独立素材、整页预览 | [V2 活动生成](skills/v2-activity-page/README.md) |
 
-三个技能均包含完整规则、专题参考文档和入口配置；设计还原与活动页技能另附适用的辅助脚本。
+四个技能均包含完整规则、专题参考文档和入口配置；设计还原与活动页技能另附适用的辅助脚本。
 
 ## 一键安装
 
@@ -32,6 +33,7 @@ npx skills add jinboamen/ui-design-skills
 npx skills add jinboamen/ui-design-skills --skill ai-figma-design-workflow
 npx skills add jinboamen/ui-design-skills --skill figma-precision-delivery
 npx skills add jinboamen/ui-design-skills --skill v1-activity-page
+npx skills add jinboamen/ui-design-skills --skill v2-activity-page
 ```
 
 先查看可发现的技能，不进行安装：
@@ -107,6 +109,15 @@ scripts/sync-global-rules.ps1，同步 Codex 全局 Figma 规范，
 
 技能会逐项补齐必要配置，搜索并展示相容参考，再制作三套样张。用户选定后复用所选背景，完成一套正式前景、静态页面与完整预览。
 
+### V2 后台活动素材
+
+```text
+使用 $v2-activity-page，根据这张 KV 和后台规格制作活动素材。
+先确认模块、排列、头图高度与背景方式，展示三套样张；选定后精修一套正式素材。
+```
+
+支持单列、双列及逐行混排。公开版不含私人后台资料，示例尺寸须按目标页面核实。V2 当前通过上方仓库安装命令获取，尚未提供独立 Release 下载包。
+
 ## 使用前准备
 
 | 项目 | 需要准备 |
@@ -124,7 +135,7 @@ python -m pip install Pillow
 
 ## 仓库结构
 
-默认分支为 `skill`，集中提供三套完整技能，便于浏览、下载和安装工具发现：
+默认分支为 `skill`，集中提供四套完整技能，便于浏览、下载和安装工具发现：
 
 ```text
 README.md
@@ -142,7 +153,13 @@ skills/
 │   ├── agents/
 │   ├── references/
 │   └── scripts/
-└── v1-activity-page/
+├── v1-activity-page/
+│   ├── README.md
+│   ├── SKILL.md
+│   ├── agents/
+│   ├── references/
+│   └── scripts/
+└── v2-activity-page/
     ├── README.md
     ├── SKILL.md
     ├── agents/
@@ -150,7 +167,7 @@ skills/
     └── scripts/
 ```
 
-已有技能另保留同名独立分支，各技能提供固定版本 Release；默认 `skill` 分支提供集中的安装入口。AI → Figma 技能目录采用 MIT 许可，许可范围以其目录内 LICENSE 为准。
+部分技能另保留同名独立分支及固定版本 Release；默认 `skill` 分支提供集中的安装入口。AI → Figma 技能目录采用 MIT 许可，许可范围以其目录内 LICENSE 为准。
 
 ## 反馈与维护
 
@@ -159,3 +176,4 @@ skills/
 更新技能时同步主分支目录、对应技能分支及相关说明；发布新版本时重新生成下载包并检查。
 
 如果这些流程对你有帮助，欢迎 Star 收藏，或将仓库分享给需要设计还原与活动页制作的同学。
+
