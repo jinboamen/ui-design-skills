@@ -524,7 +524,7 @@ def validate_module_titles(root: Path, data: dict, errors: list[str]) -> None:
         except (ValueError, TypeError) as exc:
             errors.append(f"{role}：{exc}")
     if len(sizes) > 1 or len(styles) > 1 or len(display_sizes) > 1:
-        errors.append("所有模块标题须共用一套title_style、画布及显示宽高，只替换文案；实际字形、显示尺度和效果另作视觉验收")
+        errors.append("所有模块标题须共用一套title_style、画布及显示宽高。标题配色变体、实际字形及视觉效果另作验收")
 
 
 def validate_marquee_structure(root: Path, data: dict, errors: list[str]) -> None:
@@ -737,7 +737,7 @@ def validate_continuous_background(root: Path, data: dict, errors: list[str]) ->
         return
     master = data.get("background_master")
     if not isinstance(master, dict):
-        errors.append("背景缺少background_master：两种模式都须先完成包含头图与内容区的最终跨界组合母图，再按坐标导出；按模块区分仍保留底色差异")
+        errors.append("背景缺少background_master：两种模式都须先完成包含头图与内容区的最终跨界组合母图，再按坐标导出。按模块区分时保留实际章节关系")
         return
     try:
         path = local_file(root, master["file"])
