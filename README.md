@@ -12,6 +12,7 @@ AI skills for **Figma-to-code**, **UI design**, and **campaign landing pages**, 
 
 | 你想完成的工作 | Skill | 输入与交付 | 详细说明 |
 | --- | --- | --- | --- |
+| 设计原创卡通 IP、品牌吉祥物或系列角色 | `brand-mascot-design` | 原型、品牌或概念需求 → 角色方案，可按需延展表情动作与三维材质 | [原创品牌 IP 设计](skills/brand-mascot-design/SKILL.md) |
 | 从需求、原型或已有设计生成可编辑 Figma 稿 | `ai-figma-design-workflow` | 需求与设计资料 → 独立 UI 样张、组件化 Figma、自动布局与自适应验收 | [AI → Figma 设计交付](skills/ai-figma-design-workflow/README.md) |
 | 把设计稿还原成前端，或排查还原偏差 | `figma-precision-delivery` | Figma 文件与节点、目标项目 → 页面实现、原生素材、交互和视觉验收结果 | [Figma 精准还原](skills/figma-precision-delivery/README.md) |
 | 从一张主视觉 KV 制作完整活动页 | `v1-activity-page` | KV 与活动配置 → 三套样张选一套、1920px 静态页面、分层 PNG、独立装饰和整页预览 | [V1 活动页制作](skills/v1-activity-page/README.md) |
